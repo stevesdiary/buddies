@@ -3,7 +3,7 @@ import { Controller } from "@nestjs/common";
 @Controller()
 export class TagController {
   
-  @Get()
+  // @Get()
   findAll() {
     return ['dragons', 'coffee']
   }
