@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from '@app/app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from '@app/app.service';
+import { PrismaModule } from './prisma/prisma.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -18,6 +19,7 @@ dotenv.config();
       entities: [],
       synchronize: true,
     }),
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
