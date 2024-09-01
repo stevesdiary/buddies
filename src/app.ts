@@ -5,9 +5,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { sequelize } from './models';  // Import sequelize instance
 
-import userRoutes from './routes/userRoutes';
-import chatRoutes from './routes/chatRoutes';
-import aiChatRoutes from './routes/aiChatRoutes';
+// import userRoutes from './routes/userRoutes';
+// import chatRoutes from './routes/chatRoutes';
+// import aiChatRoutes from './routes/aiChatRoutes';
 
 dotenv.config();
 
@@ -28,9 +28,9 @@ sequelize.sync({ alter: true }).then(() => {
 });
 
 // Routes
-app.use('/api/users', userRoutes);
-app.use('/api/chats', chatRoutes);
-app.use('/api/ai', aiChatRoutes);
+// app.use('/api/users', userRoutes);
+// app.use('/api/chats', chatRoutes);
+// app.use('/api/ai', aiChatRoutes);
 
 
 const PORT = process.env.LOCAL_PORT || 5000;
