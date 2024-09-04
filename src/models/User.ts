@@ -30,8 +30,8 @@ interface UserAttributes {
   stateOfOrigin: string;
   educationLevel: string;
   professionOrIndustry: string;
-  hobbiesAndInterests: string[];
-  desiredQualities: string[];
+  hobbiesAndInterests: string;
+  desiredQualities: string;
   gender: string;
   dateOfBirth: Date;
   age: number;
@@ -59,8 +59,8 @@ class User
   public age!: number;
   public educationLevel!: string;
   public professionOrIndustry!: string;
-  public hobbiesAndInterests!: string[];
-  public desiredQualities!: string[];
+  public hobbiesAndInterests!: string;
+  public desiredQualities!: string;
   public subscribed!: boolean;
 
   public readonly createdAt!: Date;
@@ -115,7 +115,7 @@ User.init(
 			allowNull: false
 		},
     gender: {
-			type: DataTypes.ENUM,
+			type: DataTypes.STRING,
 			allowNull: false
 		},
     dateOfBirth: {
@@ -144,11 +144,11 @@ User.init(
 			allowNull: false
 		},
     hobbiesAndInterests: {
-			type: DataTypes.ARRAY,
+			type: DataTypes.STRING,
 			allowNull: false
 		},
     desiredQualities: {
-			type: DataTypes.ARRAY,
+			type: DataTypes.STRING,
 			allowNull: false
 		},
   },
