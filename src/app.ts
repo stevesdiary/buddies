@@ -16,7 +16,6 @@ const app: Application = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(userRoutes);
 
 // Test MySQL Connection
 sequelize.authenticate()
@@ -28,10 +27,10 @@ sequelize.sync({ alter: true }).then(() => {
   console.log('Database synchronized');
 });
 
-app.use('/', (req: Request, res: Response) => {
-  return res.status(200).json({ message: 'Service running well.'})
-})
-// app.use('/users', userRoutes);
+// app.use('/', (req: Request, res: Response) => {
+//   return res.status(200).json({ message: 'Service running well.'})
+// })
+app.use('/user', userRoutes);
 // app.use('/api/chats', chatRoutes);
 // app.use('/api/ai', aiChatRoutes);
 
