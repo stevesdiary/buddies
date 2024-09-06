@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import User from "../models/User";
 import { v4 as uuid } from "uuid";
 import bcrypt from "bcryptjs";
@@ -9,45 +9,44 @@ const userController = {
   createUser: async (req: Request, res: Response) => {
     try {
 			interface userCreationData {
-				userId: string;
-				firstName: string;
-				lastName: string;
+				user_id: string;
+				first_name: string;
+				last_name: string;
 				username: string;
 				email: string;
 				password: string;
 				country: string;
-				stateOrProvince: string;
-				stateOfOrigin: string;
+				state_or_province: string;
+				state_of_origin: string;
 				gender: string;
-				dateOfBirth: Date;
+				date_of_birth: Date;
 				age: number;
-				educationLevel: string;
-				professionOrIndustry: string;
-				hobbiesAndInterests: string[];
-				desiredQualities: string[];
+				education_level: string;
+				profession: string;
+				hobbies_and_interests: string[];
+				qualities: string[];
 				subscribed: boolean;
 			}
 			const {
-        firstName,
-        lastName,
+        first_name,
+        last_name,
         username,
         email,
         password,
 				confirmPassword,
         country,
-        stateOrProvince,
-        stateOfOrigin,
-        educationLevel,
-        professionOrIndustry,
-        hobbiesAndInterests,
-        desiredQualities,
+        state_or_province,
+        state_of_origin,
+        education_level,
+        profession,
+        hobbies_and_interests,
+        qualities,
         gender,
-        dateOfBirth,
-				age,
+        date_of_birth,
         subscribed,
       } = req.body;
 			
-      if (!firstName || !lastName || !username || !email || !password || !confirmPassword) {
+      if (!first_name || !last_name || !username || !email || !password || !confirmPassword) {
         return res.status(400).json({ message: "Please fill in all required fields." });
       }
 
@@ -55,7 +54,7 @@ const userController = {
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&^]{8,15}$/;
 
       if (userExists) {
-        return res.status(409).json({ message: `User ${firstName} already exists. You can log in with your password.` });
+        return res.status(409).json({ message: `User ${first_name} already exists. You can log in with your email or username and password.` });
       }
 
       if (!passwordRegex.test(password)) {
@@ -71,32 +70,46 @@ const userController = {
 
       let hashedPassword = await bcrypt.hash(password, saltRounds);
 			
+			function calculateAge(date_of_birth: string | Date): number {
+				const birthDate = new Date(date_of_birth);
+				const today = new Date();
+				let age = today.getFullYear() - birthDate.getFullYear();
+				const monthDiff = today.getMonth() - birthDate.getMonth();
+				const dayDiff = today.getDate() - birthDate.getDate();
+				if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+						age--;
+				}
+				return age;
+			}
+			let dob = calculateAge(req.body.date_of_birth);
+
       const userRecord = await User.create({
-				firstName,
-        lastName,
+				// user_id: uuid(),
+				first_name,
+        last_name,
         username,
         email,
         password: hashedPassword,
         country,
-        stateOrProvince,
-        stateOfOrigin,
-        educationLevel,
-        professionOrIndustry,
-        hobbiesAndInterests,
-        desiredQualities,
+        state_or_province,
+        state_of_origin,
+        education_level,
+        profession,
+        hobbies_and_interests,
+        qualities,
         gender,
-        dateOfBirth,
-				age,
+        date_of_birth,
+				age: dob,
         subscribed,
 			});
 
-
       if (userRecord) {
-        // Adjust as needed based on the primary key field in your model (e.g., id)
-        const sanitizedUser = await User.findByPk(userRecord.userId, {
+        const sanitizedUser = await User.findOne({ 
+					where: { email },
           attributes: { exclude: ["password"] },
-        });
-        return res.status(201).json({ message: `User ${firstName} created successfully`, user: sanitizedUser });
+        }
+				);
+        return res.status(201).json({ message: `User ${first_name} created successfully`, user: sanitizedUser });
       }
     } catch (err) {
       console.error(err);
@@ -106,7 +119,9 @@ const userController = {
 
   getAllUsers: async (req: Request, res: Response) => {
     try {
-      const allUsers = await User.findAll();
+      const allUsers = await User.findAll()
+			// 	where: { attributes: { exclude: ["password"] }}
+			// });
       if (!allUsers.length) {
         return res.status(404).json({ message: "No records found" });
       }
@@ -116,6 +131,36 @@ const userController = {
       return res.status(500).json({ message: "An error occurred while fetching users.", error: error });
     }
   },
+
+	getOneUser: async (req: Request, res: Response) => {
+		try {
+			const user_id = req.params.user_id;
+			const email = req.params.email;
+			const user = await User.findOne({ where: {email: email} });
+			if (!user) {
+				return res.status(404).json({ message: `Record not found for ${user_id}`});
+			}
+			return res.status(200).send({ message: 'User found!', data: user })
+		} catch (error) {
+			res.status(500).send({ message: 'An error occurred', error });
+		}
+	},
+
+	deleteUser: async (req: Request, res: Response) => {
+		try {
+			const email = req.params.email;
+			const removeUser = await User.destroy({ where: { email } });
+			if (!removeUser) {
+				return res.status(404).send(`User ${email} was not found`);
+			}
+			if (removeUser !== 1) {
+				return res.status(200).send("User deleted successfully.");
+			}
+			return res.status(403).send("User not deleted due to an error");
+		} catch (error) {
+			return res.status(500).send({ message: 'Error occured', error: error});
+		}
+	}
 };
 
 export default userController;
