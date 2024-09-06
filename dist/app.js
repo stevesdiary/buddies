@@ -9,7 +9,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const models_1 = require("./models"); // Import sequelize instance
-// import userRoutes from './routes/userRoutes';
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 // import chatRoutes from './routes/chatRoutes';
 // import aiChatRoutes from './routes/aiChatRoutes';
 dotenv_1.default.config();
@@ -25,8 +25,10 @@ models_1.sequelize.authenticate()
 models_1.sequelize.sync({ alter: true }).then(() => {
     console.log('Database synchronized');
 });
-// Routes
-// app.use('/api/users', userRoutes);
+// app.use('/', (req: Request, res: Response) => {
+//   return res.status(200).json({ message: 'Service running well.'})
+// })
+app.use('/user', userRoutes_1.default);
 // app.use('/api/chats', chatRoutes);
 // app.use('/api/ai', aiChatRoutes);
 const PORT = process.env.LOCAL_PORT || 5000;
