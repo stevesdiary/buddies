@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsc && node dist/app.js",
-    "lint": "eslint -c .js,.ts .",
+    "lint": "eslint . --ext .ts,.js",
     "lint:fix": "eslint --ext .js,.ts . --fix"
   },
   "repository": {
@@ -26,6 +26,7 @@
   "description": "Dating application",
   "dependencies": {
     "@types/uuid": "^10.0.0",
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -43,8 +44,8 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^22.5.1",
-    "@typescript-eslint/eslint-plugin": "^8.3.0",
-    "@typescript-eslint/parser": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.4.0",
+    "@typescript-eslint/parser": "^8.4.0",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.1",
@@ -53,6 +54,7 @@
     "sequelize-cli": "^6.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
+    "standard": "*",
     "typescript-eslint": "^8.3.0"
   }
 }
