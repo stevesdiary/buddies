@@ -1,15 +1,10 @@
-// import { Model, DataTypes, Optional, UUID } from "sequelize";
-// import { sequelize } from "./index";
-// import bcrypt from "bcryptjs";
-// import { v4 as uuid } from "uuid";
-
-// models/User.ts
 import { DataTypes, Model, Sequelize, UUID } from 'sequelize';
 import { sequelize } from './index';  // Adjust the import according to your project structure
 
-class User extends Model {}
-
-// Define the User model with correct data types
+class User extends Model {
+	// date_of_birth: string | number | Date;
+	// age: number;
+}
 User.init({
   user_id: {
     type: DataTypes.UUID,
@@ -57,7 +52,7 @@ User.init({
     type: DataTypes.DATEONLY,
   },
   age: {
-    type: DataTypes.INTEGER,  // Corrected to INTEGER for MySQL compatibility
+    type: DataTypes.INTEGER,
   },
   education_level: {
     type: DataTypes.STRING,
@@ -66,19 +61,20 @@ User.init({
     type: DataTypes.STRING,
   },
   hobbies_and_interests: {
-    type: DataTypes.JSON,  // Can also use DataTypes.ARRAY(DataTypes.STRING) for PostgreSQL
+    type: DataTypes.JSON,
   },
   qualities: {
-    type: DataTypes.JSON,  // Can also use DataTypes.ARRAY(DataTypes.STRING) for PostgreSQL
+    type: DataTypes.JSON,
   },
   subscribed: {
     type: DataTypes.TINYINT,
     defaultValue: false,
   },
 }, {
-  sequelize,  // Pass the connection instance
+  sequelize,
   modelName: 'User',
   tableName: 'users',
+  // paranoid: true,
 });
 
 export default User;
