@@ -5,6 +5,18 @@ import bcrypt from "bcryptjs";
 
 const saltRounds = 10;
 
+function calculateAge(date_of_birth: string | Date): number {
+	const birthDate = new Date(date_of_birth);
+	const today = new Date();
+	let age = today.getFullYear() - birthDate.getFullYear();
+	const monthDiff = today.getMonth() - birthDate.getMonth();
+	const dayDiff = today.getDate() - birthDate.getDate();
+	if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+			age--;
+	}
+	return age;
+}
+// let dob = calculateAge(req.body.date_of_birth);
 const userController = {
   createUser: async (req: Request, res: Response) => {
     try {
@@ -67,24 +79,10 @@ const userController = {
       if (password !== confirmPassword) {
         return res.status(409).json({ message: "Passwords do not match. Please check and try again." });
       }
-
       let hashedPassword = await bcrypt.hash(password, saltRounds);
-			
-			function calculateAge(date_of_birth: string | Date): number {
-				const birthDate = new Date(date_of_birth);
-				const today = new Date();
-				let age = today.getFullYear() - birthDate.getFullYear();
-				const monthDiff = today.getMonth() - birthDate.getMonth();
-				const dayDiff = today.getDate() - birthDate.getDate();
-				if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-						age--;
-				}
-				return age;
-			}
 			let dob = calculateAge(req.body.date_of_birth);
 
       const userRecord = await User.create({
-				// user_id: uuid(),
 				first_name,
         last_name,
         username,
@@ -142,7 +140,56 @@ const userController = {
 			}
 			return res.status(200).send({ message: 'User found!', data: user })
 		} catch (error) {
-			res.status(500).send({ message: 'An error occurred', error });
+			console.error(error);
+		return res.status(500).json({ message: "An error occurred while updating the user.", error: error });
+		}
+	},
+
+	updateUser: async (req: Request, res: Response) => {
+		try {
+			const user_id = req.params.user_id;
+			const {
+				first_name,
+        last_name,
+        username,
+        country,
+        state_or_province,
+        state_of_origin,
+        education_level,
+        profession,
+        hobbies_and_interests,
+        qualities,
+        date_of_birth,
+        subscribed,
+			} = req.body;
+			let dob = calculateAge(req.body.date_of_birth);
+			const user  = await User.findByPk(user_id)
+			if (!user) {
+				return res.status(404).json({ message: `User not found.`});
+			}
+			let updatedFields = {
+				first_name,
+        last_name,
+        username,
+        country,
+        state_or_province,
+        state_of_origin,
+        education_level,
+        profession,
+        hobbies_and_interests,
+        qualities,
+        date_of_birth,
+				age: dob,
+        subscribed,
+			};
+			await user.update(updatedFields);
+
+			const updatedUser = await User.findByPk(user_id, {
+				attributes: { exclude: ["password"] },
+			});
+			return res.status(200).json({ message: 'User updated successfully', data: updatedUser})
+		} catch (error) {
+			return res.status(500).send({ message: 'Error occured', error: error});
 		}
 	},
 
