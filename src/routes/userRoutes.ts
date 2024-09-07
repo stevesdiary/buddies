@@ -8,6 +8,8 @@ router.get('/all', userController.getAllUsers);
 
 router.get('/one/:email', userController.getOneUser);
 
+router.put('/update/:user_id', userController.updateUser);
+
 router.delete("/delete/:email", userController.deleteUser);
 
 export default router;
