@@ -1,5 +1,5 @@
 import { DataTypes, Model, Sequelize, UUID } from 'sequelize';
-import { sequelize } from './index';  // Adjust the import according to your project structure
+import { sequelize } from './index';
 
 class User extends Model {
 	// date_of_birth: string | number | Date;
@@ -46,10 +46,11 @@ User.init({
     type: DataTypes.STRING,
   },
   gender: {
-    type: DataTypes.STRING,
+    type: DataTypes.ENUM('male', 'female'),
   },
   date_of_birth: {
     type: DataTypes.DATEONLY,
+    allowNull: false
   },
   age: {
     type: DataTypes.INTEGER,
