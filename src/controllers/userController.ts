@@ -1,7 +1,8 @@
-import e, { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import User from "../models/User";
-import { v4 as uuid } from "uuid";
 import bcrypt from "bcryptjs";
+import  userSchema  from '../validators/data.schema';
+import { ValidationError } from "sequelize";
 
 const saltRounds = 10;
 
@@ -16,36 +17,17 @@ function calculateAge(date_of_birth: string | Date): number {
 	}
 	return age;
 }
-// let dob = calculateAge(req.body.date_of_birth);
+
 const userController = {
   createUser: async (req: Request, res: Response) => {
     try {
-			interface userCreationData {
-				user_id: string;
-				first_name: string;
-				last_name: string;
-				username: string;
-				email: string;
-				password: string;
-				country: string;
-				state_or_province: string;
-				state_of_origin: string;
-				gender: string;
-				date_of_birth: Date;
-				age: number;
-				education_level: string;
-				profession: string;
-				hobbies_and_interests: string[];
-				qualities: string[];
-				subscribed: boolean;
-			}
 			const {
         first_name,
         last_name,
         username,
         email,
+        phone_number,
         password,
-				confirmPassword,
         country,
         state_or_province,
         state_of_origin,
@@ -57,36 +39,26 @@ const userController = {
         date_of_birth,
         subscribed,
       } = req.body;
-			
-      if (!first_name || !last_name || !username || !email || !password || !confirmPassword) {
-        return res.status(400).json({ message: "Please fill in all required fields." });
-      }
-
-      const userExists = await User.findOne({ where: { email } });
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&^]{8,15}$/;
-
+      
+      const userExists = await User.findOne({ where: { email }});
+      
       if (userExists) {
         return res.status(409).json({ message: `User ${first_name} already exists. You can log in with your email or username and password.` });
-      }
+      };
 
-      if (!passwordRegex.test(password)) {
-        return res.status(403).json({
-          message:
-            "Password must be at least 8 characters long, maximum of 15 characters, and include at least one lowercase letter, one uppercase letter, one numeric digit, and one special character.",
-        });
-      }
-
-      if (password !== confirmPassword) {
-        return res.status(409).json({ message: "Passwords do not match. Please check and try again." });
-      }
       let hashedPassword = await bcrypt.hash(password, saltRounds);
-			let dob = calculateAge(req.body.date_of_birth);
+			let age = calculateAge(date_of_birth);
+      if (age < 18) {
+        console.log('You are underage');
+        return res.status(403).json({ message: "You are under-age, this service is for adults" });
+      }
 
-      const userRecord = await User.create({
+      const userData = {
 				first_name,
         last_name,
         username,
         email,
+        phone_number,
         password: hashedPassword,
         country,
         state_or_province,
@@ -97,14 +69,16 @@ const userController = {
         qualities,
         gender,
         date_of_birth,
-				age: dob,
+				age: age,
         subscribed,
-			});
+			};
+      
+      const userRecord = await User.create(userData)
 
       if (userRecord) {
         const sanitizedUser = await User.findOne({ 
 					where: { email },
-          attributes: { exclude: ["password"] },
+          attributes: { exclude: ["password", "date_of_birth"] },
         }
 				);
         return res.status(201).json({ message: `User ${first_name} created successfully`, user: sanitizedUser });
@@ -117,9 +91,9 @@ const userController = {
 
   getAllUsers: async (req: Request, res: Response) => {
     try {
-      const allUsers = await User.findAll()
-			// 	where: { attributes: { exclude: ["password"] }}
-			// });
+      const allUsers = await User.findAll({
+				attributes: { exclude: ["password", "date_of_birth"] },
+			});
       if (!allUsers.length) {
         return res.status(404).json({ message: "No records found" });
       }
@@ -132,9 +106,11 @@ const userController = {
 
 	getOneUser: async (req: Request, res: Response) => {
 		try {
-			const user_id = req.params.user_id;
-			const email = req.params.email;
-			const user = await User.findOne({ where: {email: email} });
+			const { user_id }= req.params;
+			const user = await User.findByPk(
+				user_id ,
+				// attributes: { exclude: ['password', 'date_of_birth'] }
+    );
 			if (!user) {
 				return res.status(404).json({ message: `Record not found for ${user_id}`});
 			}
@@ -195,15 +171,24 @@ const userController = {
 
 	deleteUser: async (req: Request, res: Response) => {
 		try {
-			const email = req.params.email;
-			const removeUser = await User.destroy({ where: { email } });
-			if (!removeUser) {
-				return res.status(404).send(`User ${email} was not found`);
+			const user_id = req.params.user_id;
+			const removeUser = await User.destroy({ where: { user_id } });
+			if (removeUser < 1) {
+				return res.status(404).send({
+          status: 'error',
+          message: `User with id: ${user_id} was not found`,
+          data: null,
+          error: null
+        });
 			}
-			if (removeUser !== 1) {
-				return res.status(200).send("User deleted successfully.");
-			}
-			return res.status(403).send("User not deleted due to an error");
+			return res.status(200).send({
+        status: 'success',
+        message: 'User deleted successfully.',
+        data: removeUser,
+        error: null,
+      });
+			
+			// return res.status(403).send("User not deleted due to an error");
 		} catch (error) {
 			return res.status(500).send({ message: 'Error occured', error: error});
 		}
