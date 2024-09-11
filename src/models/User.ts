@@ -46,7 +46,7 @@ User.init({
     type: DataTypes.STRING,
   },
   gender: {
-    type: DataTypes.ENUM('male', 'female'),
+    type: DataTypes.STRING,
   },
   date_of_birth: {
     type: DataTypes.DATEONLY,
@@ -68,7 +68,7 @@ User.init({
     type: DataTypes.JSON,
   },
   subscribed: {
-    type: DataTypes.TINYINT,
+    type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
 }, {
