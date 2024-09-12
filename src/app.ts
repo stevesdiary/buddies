@@ -6,7 +6,8 @@ import dotenv from 'dotenv';
 import { sequelize } from './models';  // Import sequelize instance
 
 import userRoutes from './routes/userRoutes';
-// import chatRoutes from './routes/chatRoutes';
+import adminRoutes from './routes/adminRoutes';
+// import passwordResetRoute from './routes/passwordResetRoute';
 // import aiChatRoutes from './routes/aiChatRoutes';
 
 dotenv.config();
@@ -23,15 +24,16 @@ sequelize.authenticate()
   .catch(err => console.error('MySQL connection error:', err));
 
 // Sync models with the database
-sequelize.sync({ alter: true }).then(() => {
+// await sequelize.sync({ force: true }).then(() => {
   console.log('Database synchronized');
-});
+// });
 
 // app.use('/', (req: Request, res: Response) => {
 //   return res.status(200).json({ message: 'Service running well.'})
 // })
 app.use('/user', userRoutes);
-// app.use('/api/chats', chatRoutes);
+app.use('/admin/', adminRoutes);
+// app.use('/', passwordResetRoute);
 // app.use('/api/ai', aiChatRoutes);
 
 
