@@ -32,4 +32,4 @@ const validate = (schema: Schema, source: ValidSource) => {
   };
 };
 
-export { validate };
+export default validate;
