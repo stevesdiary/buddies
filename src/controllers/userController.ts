@@ -96,7 +96,7 @@ const userController = {
           attributes: { exclude: ["password", "date_of_birth"] },
         });
         return res.status(201).json({
-          status: "success",
+          status: 'success',
           message: `User ${first_name} created successfully`,
           data: sanitizedUser,
           error: null
