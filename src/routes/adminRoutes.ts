@@ -8,10 +8,10 @@ router.post('/create', adminController.createAdmin);
 
 router.get("/all", adminController.findAllAdmin);
 
-router.get("/one", validate(schemas.adminIdSchema, "params"), adminController.findAdmin);
+router.get("/one/:admin_id", validate(schemas.adminIdSchema, "params"), adminController.findAdmin);
 
 router.put('/update/:admin_id', validate(schemas.createAdminSchema, "params"), validate(schemas.createAdminSchema, "body"), adminController.updateAdmin);
 
-router.delete('/delete/admin_id', validate(schemas.adminIdSchema, "params"), adminController.deleteAdmin);
+router.delete('/delete/:admin_id', validate(schemas.adminIdSchema, "params"), adminController.deleteAdmin);
 
 export default router;
