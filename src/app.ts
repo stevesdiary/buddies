@@ -7,7 +7,7 @@ import { sequelize } from './models';  // Import sequelize instance
 
 import userRoutes from './routes/userRoutes';
 import adminRoutes from './routes/adminRoutes';
-// import passwordResetRoute from './routes/passwordResetRoute';
+import loginRoutes from './routes/loginRoutes';
 // import aiChatRoutes from './routes/aiChatRoutes';
 
 dotenv.config();
@@ -18,14 +18,13 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Test MySQL Connection
 sequelize.authenticate()
   .then(() => console.log('MySQL connected successfully'))
   .catch(err => console.error('MySQL connection error:', err));
 
 // Sync models with the database
 // await sequelize.sync({ force: true }).then(() => {
-  console.log('Database synchronized');
+  // console.log('Database synchronized');
 // });
 
 // app.use('/', (req: Request, res: Response) => {
@@ -33,7 +32,7 @@ sequelize.authenticate()
 // })
 app.use('/user', userRoutes);
 app.use('/admin/', adminRoutes);
-// app.use('/', passwordResetRoute);
+app.use('/login/', loginRoutes);
 // app.use('/api/ai', aiChatRoutes);
 
 
