@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { NextFunction, Request, Response } from 'express';
 import User from '../models/User';
-const EXPIRY = process.env.TOKEN_EXPIRY || Math.floor(Date.now() / 1000) + 60 * 60 * 10
+const EXPIRY = Math.floor(Date.now() / 1000) + 60 * 60 * 10
 
 interface LoginRequest extends Request {
 	body: {
@@ -29,14 +29,15 @@ const loginController = {
 		
 		const accessToken = jwt.sign(
 			{
-				exp: EXPIRY,
+			
 				AdminInfo: {
 					admin_id: admin.dataValues.admin_id,
 					email: email,
 					role: admin.dataValues.role,
 				},
+				exp: EXPIRY,
 			},
-			process.env.JWT_SECRET as string
+			process.env.JWT_SECRET as string,
 		);
 		return res.status(200).send({
 			first_name: admin.dataValues.first_name,
@@ -63,12 +64,13 @@ const loginController = {
 		
 		const accessToken = jwt.sign(
 			{
-				exp: Math.floor(Date.now() / 1000) + 60 * 60 * 10,
+				
 				UserInfo: {
 					user_id: user.dataValues.user_id,
 					email: email,
 					role: user.dataValues.role,
 				},
+				exp: EXPIRY,
 			},
 			process.env.JWT_SECRET as string
 		);
