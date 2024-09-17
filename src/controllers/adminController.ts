@@ -1,11 +1,12 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Admin from "../models/Admin";
 import bcrypt from "bcryptjs";
+import { error } from "console";
 
 const saltRounds = process.env.SALT || 10;
 
 const adminController = {
-	createAdmin: async (req: Request, res: Response) => {
+	createAdmin: async (req: Request, res: Response, next: NextFunction) => {
 		const { first_name, last_name, username, email, password, confirmPassword, role } = req.body;
 		try {
 			if (!(first_name && email && password)) {
@@ -14,18 +15,21 @@ const adminController = {
 			if (password !== confirmPassword) {
 				return res.status(403).send({ message: 'Password do not match, ensure that password match to continue.'})
 			}
+			const exists = await Admin.findOne({ where: { email }});
+			if (exists) {
+				return res.status(200).send({ message: `Admin ${email} already exists, login with email and password.` });
+			};
 			const hashedPassword =  await bcrypt.hash(password, saltRounds);
 			const admin = await Admin.create({
 				first_name, last_name, username, email, password: hashedPassword,  role 
 			});
 			return res.status(201).send({ message: 'Admin created successfully', admin });
-		} catch (err) {
-			console.error(err);
-      return res.status(500).json({ message: "An error occurred!", error: err });
+		} catch (error) {
+			return next(error);
 		}
 	},
 
-	updateAdmin: async (req: Request, res: Response) => {
+	updateAdmin: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { admin_id } = req.params;
 			const { first_name, last_name, username, email, role } = req.body;
@@ -43,29 +47,31 @@ const adminController = {
 			await admin.update(updateFields);
 
 			const updatedData = await Admin.findByPk(admin_id, {
-				attributes: { exclude: ['password']}
+				attributes: { exclude: ['password', 'createdAt']}
 			});
 			return res.status(200).send({ message: 'Admin data updated successfully!', updatedData });
 		} catch (err) {
-			console.error(err);
-      return res.status(500).json({ message: "An error occurred!", error: err });
+      return next(error);
 		}
 	},
 
-	findAdmin: async (req: Request, res: Response) => {
+	findAdmin: async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const admin_id = req.params.admin_id;
-			const admin = await Admin.findOne({ where: {admin_id}, attributes: { exclude: ['password']}});
+			const { admin_id } = req.params;
+			const admin = await Admin.findByPk(
+				admin_id,
+				{ attributes: { exclude: ['password'] },
+			});
 			if (!admin) {
 				return res.status(404).send({ message: 'Admin record not found'})
 			}
 			return res.status(200).send({ message: 'Admin found!', admin });
 		} catch (error) {
-			return res.status(500).send({ message: 'Error occured', error: error});
+			return next(error)
 		}
 	},
 
-	findAllAdmin: async (req: Request, res: Response) => {
+	findAllAdmin: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const admin = await Admin.findAll({ attributes: { exclude: ['password']}});
 			if (!admin) {
@@ -73,14 +79,14 @@ const adminController = {
 			}
 			return res.status(200).send({ message: 'Admin record(s) found!', admin });
 		} catch (error) {
-			return res.status(500).send({ message: 'Error occured', error: error});
+			return next(error)
 		}
 	},
 
-	deleteAdmin: async (req: Request, res: Response) => {
+	deleteAdmin: async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const admin_id = req.params.admin_id;
-			const record = await Admin.destroy({ where: { admin_id }});
+			const admin_id = req.params;
+			const record = await Admin.destroy({ where:  admin_id });
 			if (record < 1) {
 				return res.status(404).send({
 					status: 'error',
@@ -96,10 +102,9 @@ const adminController = {
 				error: null
 			});
 		} catch (error) {
-			return res.status(500).send({ message: 'Error occured', error: error});
+			return next(error)
 		}
 	}
-
 }
 
 export default adminController;
