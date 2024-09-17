@@ -1,10 +1,7 @@
 import { DataTypes, Model, Sequelize, UUID } from 'sequelize';
 import { sequelize } from './index';
 
-class User extends Model {
-	// date_of_birth: string | number | Date;
-	// age: number;
-}
+class User extends Model {}
 User.init({
   user_id: {
     type: DataTypes.UUID,
@@ -80,7 +77,7 @@ User.init({
   sequelize,
   modelName: 'User',
   tableName: 'users',
-  // paranoid: true,
+  paranoid: true,
 });
 
 export default User;
