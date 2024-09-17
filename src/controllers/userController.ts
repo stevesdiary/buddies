@@ -187,6 +187,7 @@ const userController = {
         qualities,
         date_of_birth,
         subscribed,
+        role
       } = req.body;
       let age = calculateAge(req.body.date_of_birth);
       const user = await User.findByPk(user_id);
@@ -207,6 +208,7 @@ const userController = {
         date_of_birth,
         age,
         subscribed,
+        role
       };
       await user.update(updatedFields);
 
