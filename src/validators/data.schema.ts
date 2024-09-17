@@ -71,7 +71,8 @@ const updateUserSchema = Joi.object({
 	profession: Joi.string().required().label('Profession'),
 	hobbies_and_interests: Joi.array().required().label('Hobbies and interests'),
 	qualities: Joi.array().required().label('Qualities'),
-	subscribed: Joi.boolean().optional()
+	subscribed: Joi.boolean().optional(),
+	role: Joi.string().optional().label('Role')
 });
 
 const userIdSchema = Joi.object({
