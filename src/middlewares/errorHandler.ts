@@ -28,6 +28,11 @@ const errorHandler = (
       message = 'Unique constraint violation';
       details = error.errors;
       break;
+    case 'jwtError':
+      statusCode = 401;
+      message = 'Invalid token';
+      details = error
+      break;
   }
 
   res.status(statusCode).json({
