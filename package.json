@@ -38,6 +38,7 @@
     "mysql2": "^3.11.0",
     "node-cron": "^3.0.3",
     "sequelize": "^6.37.3",
+    "sequelize-typescript": "^2.1.6",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
