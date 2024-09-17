@@ -71,6 +71,11 @@ User.init({
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  role: {
+    type: DataTypes.ENUM,
+    values: ['basic', 'premium'],
+    defaultValue: 'basic'
+  }
 }, {
   sequelize,
   modelName: 'User',
