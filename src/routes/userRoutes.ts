@@ -11,7 +11,7 @@ router.post('/create',
 	userController.createUser);
 
 router.get('/all', authenticateUserOrAdmin,
-	authorizeUserOrAdmin(['basic', 'premium'], ['master']),
+	authorizeUserOrAdmin(['basic', 'premium'], ['master', 'senior']),
 	userController.getAllUsers);
 
 router.get('/one/:user_id', authenticateUserOrAdmin,
