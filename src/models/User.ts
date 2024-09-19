@@ -43,7 +43,8 @@ User.init({
     type: DataTypes.STRING,
   },
   gender: {
-    type: DataTypes.STRING,
+    type: DataTypes.ENUM,
+    values: ['male', 'female'],
   },
   date_of_birth: {
     type: DataTypes.DATEONLY,
