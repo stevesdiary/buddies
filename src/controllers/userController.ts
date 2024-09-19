@@ -49,14 +49,12 @@ const userController = {
       const userExists = await User.findOne({ where: { email } });
 
       if (userExists) {
-        return res
-          .status(409)
-          .json({
-            status: 'error',
-            message: `User ${first_name} already exists. You can log in with your email or username and password.`,
-            data: null,
-            error: null
-          });
+        return res.status(409).json({
+          status: 'error',
+          message: `User ${first_name} already exists. You can log in with your email or username and password.`,
+          data: null,
+          error: null
+        });
       }
 
       let hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -121,7 +119,7 @@ const userController = {
       const limit: number = pageSize;
       const result: PaginationResult<typeof User.prototype> =
         await User.findAndCountAll({
-          attributes: { exclude: ["password", "date_of_birth"] },
+          attributes: { exclude: ["password", "date_of_birth", "createdAt", "updatedAt", "deletedAt"] },
           offset,
           limit,
         });
@@ -152,7 +150,7 @@ const userController = {
     try {
       const { user_id } = req.params;
       const user = await User.findByPk(user_id, {
-        attributes: { exclude: ["password", "date_of_birth"] },
+        attributes: { exclude: ["password", "date_of_birth", "createdAt", "updatedAt", "deletedAt"] },
       });
       if (!user) {
         return res
