@@ -5,3 +5,4 @@ dist/
 .eslintrc.json
 .eslintrc
 .vscode/settings.json
+# src/config/config.json
