@@ -1,17 +1,16 @@
 import { DataTypes, Model } from "sequelize";
-import { DataType } from "sequelize-typescript";
 import { sequelize } from './index';
 
 
 class Quality extends Model {}
 Quality.init({
 	quality_id: {
-		type: DataType.UUID,
+		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
 		primaryKey:true
 	},
 	quality: {
-		type: DataType.STRING,
+		type: DataTypes.STRING,
 		allowNull: false
 	}
 }, {
