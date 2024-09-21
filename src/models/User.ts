@@ -1,5 +1,9 @@
 import { DataTypes, Model, Sequelize, UUID } from 'sequelize';
 import { sequelize } from './index';
+import Quality from './Qualities';
+import Interest from './Interests';
+import UserQuality from './UserQuality';
+import UserInterest from './UserInterest';
 
 class User extends Model {}
 User.init({
@@ -80,6 +84,12 @@ User.init({
   tableName: 'users',
   paranoid: true,
 });
+
+User.belongsToMany(Quality, { through: UserQuality, as: 'qualities', foreignKey: 'userId' });
+Quality.belongsToMany(User, { through: UserQuality, as: 'users', foreignKey: 'qualityId' });
+
+User.belongsToMany(Interest, { through: UserInterest, as: 'interests', foreignKey: 'userId' });
+Interest.belongsToMany(User, { through: UserInterest, as: 'users', foreignKey: 'interestId' });
 
 export default User;
 
