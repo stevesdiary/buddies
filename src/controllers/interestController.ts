@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import Interest from '../models/Interests';
-import { error } from "console";
+import Interest from '../models/Interest';
 
 const interestController = {
 	createInterest: async (req: Request, res: Response, next: NextFunction) => {
