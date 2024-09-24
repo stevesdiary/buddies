@@ -32,4 +32,5 @@ router.delete('/delete/:user_id',
 	validate(schemas.userIdSchema, 'params'),
 	userController.deleteUser);
 
+router.get('/matches/:user_id', userController.getUserMatches);
 export default router;
