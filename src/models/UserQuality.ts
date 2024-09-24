@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from './index';
 import User from './User';
-import Quality from './Qualities';
+import Quality from './Quality';
 
 class UserQuality extends Model {}
 
