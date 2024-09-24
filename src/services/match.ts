@@ -1,31 +1,30 @@
 import { Op } from 'sequelize';
-import User from '../models/User';  // Assuming User is your model with qualities and interests as JSON fields
+import User from '../models/User';
 
 export const findBestMatches = async (
   user_id: string, 
   page: number = 1, 
-  limit: number = 5
+  limit: number = 10,
+	basic_limit: number = 1,
 ) => {
   try {
     const currentUser = await User.findByPk(user_id);
-		// console.log("Got currentUser", currentUser)
     if (!currentUser) {
       throw new Error('User not found');
     }
 
-    const currentUserQualities = currentUser.qualities || [];  // Qualities as a JSON array
-    const currentUserInterests = currentUser.hobbies_and_interests || [];  // Interests as a JSON array
+    const currentUserQualities = currentUser.qualities || [];
+    const currentUserInterests = currentUser.hobbies_and_interests || [];
     const currentUserGender = currentUser.gender;
     const currentUserAge = currentUser.age;
 
-    // Fetch other users (excluding the current user)
     const otherUsers = await User.findAll({
       where: {
-        user_id: { [Op.not]: user_id },  // Exclude current user
+        user_id: { [Op.not]: user_id },
         gender: currentUserGender === 'male' ? 'female' : 'male',  // Only match opposite gender
       },
       limit: limit,
-      offset: (page - 1) * limit,  // Pagination
+      offset: (page - 1) * limit,
     });
 
     const matches = otherUsers.map((user) => {
@@ -51,7 +50,7 @@ export const findBestMatches = async (
         // Skip if age difference doesn't meet the criteria
         if (!ageDifferenceValid) {
 					console.log("Age difference is invalid for user: ", user.username)
-          // return null;  // Skip this match
+          // return null;
         }
         const commonQualities = currentUserQualities.map(q => q.toLowerCase()).filter((q) => 
 					otherUserQualities.map(oq => oq.toLowerCase()).includes(q));
@@ -85,10 +84,27 @@ export const findBestMatches = async (
     // Sort matches by matchScore in descending order
     const sortedMatches = matches.sort((a, b) => b!.matchScore - a!.matchScore);
 
-    // Calculate total pages
-    const totalUsers = await User.count({ where: { user_id: { [Op.ne]: user_id } } });
+    const totalUsers = await User.count({ where: { user_id: { [Op.not]: user_id } } });
     const totalPages = Math.ceil(totalUsers / limit);
-		// console.log("Total matches", matches.length);
+		if (currentUser.role === 'basic') {
+			return {
+				currentUser: {
+					user_id: currentUser.user_id,
+					username: currentUser.username,
+					first_name: currentUser.first_name,
+					last_name: currentUser.last_name,
+					age: currentUser.age,
+					gender: currentUser.gender,
+					qualities: currentUserQualities,
+					interests: currentUserInterests,
+				},
+				matche: sortedMatches.slice(0, basic_limit),
+				totalItems: totalUsers,
+				totalPages: totalPages,
+				currentPage: page,
+				pageSize: limit,
+			}
+		}
     return {
       currentUser: {
         user_id: currentUser.user_id,
@@ -111,7 +127,6 @@ export const findBestMatches = async (
     throw error;
   }
 };
-
 
 
 
