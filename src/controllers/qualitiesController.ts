@@ -1,29 +1,14 @@
 import { NextFunction, Request, Response } from "express";
-import Quality from '../models/Qualities';
+import Quality from '../models/Quality';
 import { error } from "console";
 
 const qualitiesControlller = {
-	// createQuality: async (req: Request, res: Response, next: NextFunction) => {
-	// 	try {
-	// 		const  { quality } = req.body;
-	// 		if (!quality) {
-	// 			return res.status(400).json({ message: 'Please enter a quality' });
-	// 		}
-	// 		const qualityExists = await Quality.create(quality);
-	// 		if ( qualityExists ) {
-	// 			res.status(201).json({ message: `${quality} has been added to the list`, qualityExists });
-	// 		}
-	// 	} catch (error) {
-	// 		return next(error);
-	// 	}
-	// },
 	createQuality: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { quality } = req.body;
 			if (!quality) {
 				return res.status(400).json({ message: 'Please enter a quality' });
 			}
-	
 			const existingQuality = await Quality.findOne({ where: { quality: quality } });
 			if (existingQuality) {
 				return res.status(409).json({ message: `Quality '${quality}' already exists.` });
@@ -91,7 +76,7 @@ const qualitiesControlller = {
       }
       return res.status(200).send({
         status: "success",
-        message: "User deleted successfully.",
+        message: `Quality deleted successfully.`,
         data: deleteQuality,
         error: null,
       });
