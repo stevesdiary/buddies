@@ -48,10 +48,10 @@ export const findBestMatches = async (
 
 
         // Skip if age difference doesn't meet the criteria
-        if (!ageDifferenceValid) {
-					console.log("Age difference is invalid for user: ", user.username)
+        // if (!ageDifferenceValid) {
+					// console.log("Age difference is invalid for user: ", user.username)
           // return null;
-        }
+        // }
         const commonQualities = currentUserQualities.map(q => q.toLowerCase()).filter((q) => 
 					otherUserQualities.map(oq => oq.toLowerCase()).includes(q));
 
@@ -86,7 +86,7 @@ export const findBestMatches = async (
 
     const totalUsers = await User.count({ where: { user_id: { [Op.not]: user_id } } });
     const totalPages = Math.ceil(totalUsers / limit);
-		if (currentUser.role === 'basic') {
+		if (currentUser.role === 'basic' || currentUser.subscribed === true) {
 			return {
 				currentUser: {
 					user_id: currentUser.user_id,
@@ -98,7 +98,7 @@ export const findBestMatches = async (
 					qualities: currentUserQualities,
 					interests: currentUserInterests,
 				},
-				matche: sortedMatches.slice(0, basic_limit),
+				match: sortedMatches.slice(0, basic_limit),
 				totalItems: totalUsers,
 				totalPages: totalPages,
 				currentPage: page,
