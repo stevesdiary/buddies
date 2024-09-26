@@ -1,11 +1,22 @@
 import { DataTypes, Model, Sequelize, UUID } from 'sequelize';
 import { sequelize } from './index';
-import Quality from './Qualities';
-import Interest from './Interests';
+import Quality from './Quality';
+import Interest from './Interest';
 import UserQuality from './UserQuality';
 import UserInterest from './UserInterest';
 
-class User extends Model {}
+class User extends Model {
+	age!: number;
+	qualities!: string[];
+	hobbies_and_interests!: string[];
+	gender!: string;
+	last_name!: string;
+	first_name!: string;
+	username!: string;
+	user_id!: string;
+	role!: string;
+  subscribed!: boolean;
+}
 User.init({
   user_id: {
     type: DataTypes.UUID,
@@ -85,11 +96,11 @@ User.init({
   paranoid: true,
 });
 
-User.belongsToMany(Quality, { through: UserQuality, as: 'qualities', foreignKey: 'userId' });
-Quality.belongsToMany(User, { through: UserQuality, as: 'users', foreignKey: 'qualityId' });
+User.belongsToMany(Quality, { through: UserQuality, as: 'quality', foreignKey: 'user_id' });
+Quality.belongsToMany(User, { through: UserQuality, as: 'users', foreignKey: 'quality_id' });
 
-User.belongsToMany(Interest, { through: UserInterest, as: 'interests', foreignKey: 'userId' });
-Interest.belongsToMany(User, { through: UserInterest, as: 'users', foreignKey: 'interestId' });
+User.belongsToMany(Interest, { through: UserInterest, as: 'interest', foreignKey: 'user_id' });
+Interest.belongsToMany(User, { through: UserInterest, as: 'users', foreignKey: 'interest_id' });
 
 export default User;
 
