@@ -3,6 +3,8 @@ import User from "../models/User";
 import bcrypt from "bcryptjs";
 import userSchema from "../validators/data.schema";
 import { ValidationError } from "sequelize";
+import { findBestMatches } from "../services/match";
+import dataSchema from "../validators/data.schema";
 
 const saltRounds = 10;
 
@@ -44,7 +46,7 @@ const userController = {
         date_of_birth,
         subscribed,
       } = req.body;
-      // console.log("BODYYY: ", req.body)
+      // console.log("BODYYY: ", req.body.qualities, req.body.interests);
 
       const userExists = await User.findOne({ where: { email } });
 
@@ -119,7 +121,7 @@ const userController = {
       const limit: number = pageSize;
       const result: PaginationResult<typeof User.prototype> =
         await User.findAndCountAll({
-          attributes: { exclude: ["password", "date_of_birth", "createdAt", "updatedAt", "deletedAt"] },
+          attributes: { exclude: ["password", "date_of_birth", "state_of_origin", "createdAt", "updatedAt", "deletedAt"] },
           offset,
           limit,
         });
@@ -245,6 +247,50 @@ const userController = {
       return res.status(500).send({ message: "Error occured", error: error });
     }
   },
+
+  getUserMatches: async (req: Request, res: Response) => {
+    const userId = req.params.user_id;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+  
+    try {
+      const result = await findBestMatches(userId, page, limit);
+      
+      res.status(200).json({
+        status: 'success',
+        message: `Top ${limit} matches for page ${page}`,
+        data: result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: 'Error finding matches',
+        error: error,
+      });
+    }
+  }
+
+  // findBestMatches: async (req: Request, res: Response) => {
+  //   const user_id = req.params.user_id;
+  //   const page = parseInt(req.query.page as string) || 1;
+  //   const limit = parseInt(req.query.limit as string) || 5;
+
+  //   try {
+  //     const result = await findBestMatches(user_id, page, limit);
+  //     res.status(200).json({
+  //       status: "success",
+  //       message: `Top ${limit} matches for page ${page}`,
+  //       data: result,
+  //       error: null,
+  //     })
+  //   } catch (error) {
+  //     res.status(500).json({
+  //       status: "error",
+  //       message: "Error finding best matches",
+  //       error: error
+  //     })
+  //   }
+  // }
 };
 
 export default userController;
