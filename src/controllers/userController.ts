@@ -1,10 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
-import userSchema from "../validators/data.schema";
-import { ValidationError } from "sequelize";
+import { Op } from "sequelize";
 import { findBestMatches } from "../services/match";
-import dataSchema from "../validators/data.schema";
 
 const saltRounds = 10;
 
@@ -119,9 +117,25 @@ const userController = {
       const pageNumber: number = parseInt(req.query.pageNumber as string) || 1;
       const offset: number = (pageNumber - 1) * pageSize;
       const limit: number = pageSize;
+      const search = req.query.search;
+      let nameCitySearch = [];
+      if ( search ) {
+        nameCitySearch .push({
+          [Op.or]: [
+            { first_name: {[Op.like]: `%${search}%` } },
+            { last_name: {[Op.like]: `%${search}%` } },
+            { username: {[Op.like]: `%${search}%` } },
+            { state_or_province: {[Op.like]: `%${search}%` } },
+          ]
+        })
+      }
+      const whereConditions = {
+        [Op.and]: [...nameCitySearch],
+      };
       const result: PaginationResult<typeof User.prototype> =
         await User.findAndCountAll({
           attributes: { exclude: ["password", "date_of_birth", "state_of_origin", "createdAt", "updatedAt", "deletedAt"] },
+          where: whereConditions,
           offset,
           limit,
         });
