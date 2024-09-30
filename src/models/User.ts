@@ -96,11 +96,11 @@ User.init({
   paranoid: true,
 });
 
-User.belongsToMany(Quality, { through: UserQuality, as: 'quality', foreignKey: 'user_id' });
-Quality.belongsToMany(User, { through: UserQuality, as: 'users', foreignKey: 'quality_id' });
+// User.belongsToMany(Quality, { through: UserQuality, as: 'quality', foreignKey: 'user_id' });
+// Quality.belongsToMany(User, { through: UserQuality, as: 'users', foreignKey: 'quality_id' });
 
-User.belongsToMany(Interest, { through: UserInterest, as: 'interest', foreignKey: 'user_id' });
-Interest.belongsToMany(User, { through: UserInterest, as: 'users', foreignKey: 'interest_id' });
+// User.belongsToMany(Interest, { through: UserInterest, as: 'interest', foreignKey: 'user_id' });
+// Interest.belongsToMany(User, { through: UserInterest, as: 'users', foreignKey: 'interest_id' });
 
 export default User;
 
