@@ -16,6 +16,7 @@ class User extends Model {
 	user_id!: string;
 	role!: string;
   subscribed!: boolean;
+  dp!: string;
 }
 User.init({
   user_id: {
@@ -88,6 +89,10 @@ User.init({
     type: DataTypes.ENUM,
     values: ['basic', 'premium'],
     defaultValue: 'basic'
+  },
+  dp: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   sequelize,
