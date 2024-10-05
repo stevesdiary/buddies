@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
+import { string } from "joi";
 import jwt from "jsonwebtoken";
 import { JwtPayload } from "jsonwebtoken";
 
 const userSecret = process.env.USER_JWT_SECRET || "";
 const adminSecret = process.env.ADMIN_JWT_SECRET || "";
-// const UserRole = process.env.USER_ROLE || 'user';
+const userRole = process.env.USER_ROLE as string;
 // const AdminRole = process.env.ADMIN_ROLE || 'admin';
 type UserRole = 'basic' | 'premium';
 type AdminRole = 'junior' | 'senior' | 'master'; //these will be in the env
@@ -92,7 +93,6 @@ const authorizeUserOrAdmin = (allowedUserRoles: UserRole[], allowedAdminRoles: A
     }
 
     if (req.admin && typeof req.admin.role === 'string') {
-      console.log('Admin authorized:', req.admin.role);
       return next();
     }
     res.status(403).json({
