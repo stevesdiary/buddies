@@ -3,6 +3,7 @@ import User from "../models/User";
 import bcrypt from "bcryptjs";
 import { Op } from "sequelize";
 import { findBestMatches } from "../services/match";
+import { Sequelize } from "sequelize-typescript";
 
 const saltRounds = 10;
 
@@ -59,7 +60,7 @@ const userController = {
 
       let hashedPassword = await bcrypt.hash(password, saltRounds);
       let age = calculateAge(date_of_birth);
-      if (age < 18) {
+      if (age < 20) {
         console.log("You are underage");
         return res
           .status(403)
@@ -115,6 +116,9 @@ const userController = {
     try {
       const pageSize: number = parseInt(req.query.pageSize as string) || 10;
       const pageNumber: number = parseInt(req.query.pageNumber as string) || 1;
+      const minAge: number = parseInt(req.query.minAge as string);
+      const maxAge: number = parseInt(req.query.maxAge as string);
+      let ageRange = { age: {[Op.between]: minAge, maxAge}}
       const offset: number = (pageNumber - 1) * pageSize;
       const limit: number = pageSize;
       const search = req.query.search;
@@ -129,8 +133,15 @@ const userController = {
           ]
         })
       }
+      // if ( ageRange) {
+        // Sequelize.literal(`date BETWEEN '${minAge}' AND '${maxAge}'`),
+      // }
       const whereConditions = {
-        [Op.and]: [...nameCitySearch],
+        [Op.and]: [
+          ...nameCitySearch,
+          Sequelize.literal(`age BETWEEN '${minAge}' AND '${maxAge}'`)
+        ],
+        // [Op.between]: { age: { minAge, maxAge } }
       };
       const result: PaginationResult<typeof User.prototype> =
         await User.findAndCountAll({
