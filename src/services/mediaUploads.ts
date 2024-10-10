@@ -2,7 +2,6 @@ import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryResponse } from './types';
 import { Readable } from 'stream';
 import User from '../models/User';
-import { where } from 'sequelize';
 export async function uploadImageToCloudinary(
   image: string | Readable,
   user_id: string
