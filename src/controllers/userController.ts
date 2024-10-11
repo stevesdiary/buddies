@@ -118,7 +118,10 @@ const userController = {
       const pageNumber: number = parseInt(req.query.pageNumber as string) || 1;
       const minAge: number = parseInt(req.query.minAge as string);
       const maxAge: number = parseInt(req.query.maxAge as string);
-      let ageRange = { age: {[Op.between]: minAge, maxAge}}
+      const subscribed: string = req.query.subscribed as string;
+      let subscriberStatus;
+      subscriberStatus = {subscribed: {[Op.eq]: subscribed}}
+      // let ageRange = { age: {[Op.between]: minAge, maxAge}}
       const offset: number = (pageNumber - 1) * pageSize;
       const limit: number = pageSize;
       const search = req.query.search;
@@ -139,7 +142,9 @@ const userController = {
       const whereConditions = {
         [Op.and]: [
           ...nameCitySearch,
+          subscriberStatus,
           Sequelize.literal(`age BETWEEN '${minAge}' AND '${maxAge}'`)
+
         ],
         // [Op.between]: { age: { minAge, maxAge } }
       };
