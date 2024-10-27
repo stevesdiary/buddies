@@ -53,7 +53,7 @@ const loginController = {
 		try {
 			const user = await User.findOne({ where: { email }});
 		if (!user) {
-			res.status(404).json({ message: 'Email not found' });
+			res.status(404).json({ message: 'User not found' });
 			return;
 		}
 		const passwordMatch = await bcrypt.compare(password, user.dataValues.password);
