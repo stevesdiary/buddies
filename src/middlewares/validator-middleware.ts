@@ -27,6 +27,7 @@ const validate = (schema: Schema, source: ValidSource) => {
       }
       next();
     } catch (error) {
+      console.log(error);
       return next(error instanceof Error ? error : new Error('Unknown error occurred'));
     }
   };
