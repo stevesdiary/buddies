@@ -40,9 +40,9 @@ app.use('/quality/', qualityRoutes);
 app.use('/interest/', interestRoutes);
 app.use('/upload/', uploadRoute);
 
- app.use('/', (req: Request, res: Response) => {
-   return res.status(200).json({ message: 'Service running well.'})
- })
+app.use('/health', (req: Request, res: Response) => {
+  return res.status(200).json({ message: 'Service running well.'})
+})
 const PORT = process.env.LOCAL_PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
