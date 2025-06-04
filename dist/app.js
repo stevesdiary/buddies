@@ -34,8 +34,8 @@ app.use('/login/', loginRoutes_1.default);
 app.use('/quality/', qualityRoutes_1.default);
 app.use('/interest/', interestRoutes_1.default);
 app.use('/upload/', uploadRoute_1.default);
-// app.use('/', (req: Request, res: Response) => {
-//   return res.status(200).json({ message: 'Service running well.'})
-// })
+app.use('/health', (req, res) => {
+    return res.status(200).json({ message: 'Service running well.' });
+});
 const PORT = process.env.LOCAL_PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
